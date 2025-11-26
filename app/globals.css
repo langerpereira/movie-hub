@@ -503,6 +503,73 @@ textarea {
   box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
 }
 
+.episode-selector {
+  background: rgba(20, 20, 20, 0.95);
+  padding: 16px;
+  border-bottom: 2px solid rgba(229, 9, 20, 0.3);
+  display: flex;
+  justify-content: center;
+}
+
+.episode-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.control-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.episode-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  width: 80px;
+  text-align: center;
+}
+
+.episode-input:focus {
+  outline: none;
+  border-color: #e50914;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.load-btn {
+  background: #e50914;
+  border: none;
+  color: #ffffff;
+  padding: 8px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.load-btn:hover {
+  background: #f40612;
+  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.5);
+  transform: translateY(-2px);
+}
+
 .player-container {
   width: 100%;
   background: var(--bg-card);
