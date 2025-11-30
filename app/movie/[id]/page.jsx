@@ -49,27 +49,28 @@ export default async function MoviePage({ params }) {
       {/* Movie Details Section */}
       <div className="container movie-container">
         <div className="movie-header">
-          <div>
+          <div className="movie-poster-wrapper">
             {hasMetadata && movieData.poster_path ? (
               <Image
                 src={getPosterUrl(movieData.poster_path)}
                 alt={movieData.title || movieData.name}
-                width={300}
-                height={450}
-                className="movie-poster"
+                width={200}
+                height={300}
+                className="movie-poster-detail"
                 priority
               />
             ) : (
               <div
-                className="movie-poster"
+                className="movie-poster-detail"
                 style={{
-                  width: '300px',
-                  height: '450px',
+                  width: '200px',
+                  height: '300px',
                   background: 'var(--bg-card)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: 'var(--text-secondary)',
+                  borderRadius: '12px',
                 }}
               >
                 🎬

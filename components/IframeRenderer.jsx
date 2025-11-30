@@ -6,19 +6,21 @@ import Link from 'next/link'
 
 const STORAGE_KEY = 'tmdb_iframes_v1'
 
-// Available streaming servers
+// Available streaming servers (All FREE - Updated for best reliability)
 const SERVERS = [
-  { name: 'VidSrc', url: (type, id, season, episode) => type === 'tv' ? `https://vidsrc.xyz/embed/${type}/${id}/${season}/${episode}` : `https://vidsrc.xyz/embed/${type}/${id}` },
-  { name: 'VidSrc Pro', url: (type, id, season, episode) => type === 'tv' ? `https://vidsrc.pro/embed/${type}/${id}/${season}/${episode}` : `https://vidsrc.pro/embed/${type}/${id}` },
-  { name: 'VidSrc.me', url: (type, id, season, episode) => type === 'tv' ? `https://vidsrc.me/embed/${type}/${id}/${season}/${episode}` : `https://vidsrc.me/embed/${type}/${id}` },
+  // Most Reliable - Primary Servers
+  { name: 'VidSrc.icu', url: (type, id, season, episode) => type === 'tv' ? `https://vidsrc.icu/embed/tv/${id}/${season}/${episode}` : `https://vidsrc.icu/embed/movie/${id}` },
+  { name: 'VidSrc.cc', url: (type, id, season, episode) => type === 'tv' ? `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}` : `https://vidsrc.cc/v2/embed/movie/${id}` },
+  { name: 'Embed.su', url: (type, id, season, episode) => type === 'tv' ? `https://embed.su/embed/tv/${id}/${season}/${episode}` : `https://embed.su/embed/movie/${id}` },
   { name: 'VidLink', url: (type, id, season, episode) => type === 'tv' ? `https://vidlink.pro/tv/${id}/${season}/${episode}` : `https://vidlink.pro/movie/${id}` },
-  { name: 'AutoEmbed', url: (type, id, season, episode) => type === 'tv' ? `https://autoembed.co/tv/tmdb/${id}/${season}/${episode}` : `https://autoembed.co/movie/tmdb/${id}` },
-  { name: 'NontonGo', url: (type, id, season, episode) => type === 'tv' ? `https://www.NontonGo.win/embed/tv/${id}/${season}/${episode}` : `https://www.NontonGo.win/embed/movie/${id}` },
-  { name: 'VidBinge', url: (type, id, season, episode) => type === 'tv' ? `https://www.vidbinge.dev/embed/${type}/${id}/${season}/${episode}` : `https://www.vidbinge.dev/embed/${type}/${id}` },
-  { name: 'SmashyStream', url: (type, id, season, episode) => type === 'tv' ? `https://player.smashy.stream/${type}/${id}?s=${season}&e=${episode}` : `https://player.smashy.stream/${type}/${id}` },
+  { name: 'SuperEmbed', url: (type, id, season, episode) => type === 'tv' ? `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}` : `https://multiembed.mov/?video_id=${id}&tmdb=1` },
+  
+  // Backup Servers
+  { name: 'VidSrc.xyz', url: (type, id, season, episode) => type === 'tv' ? `https://vidsrc.xyz/embed/tv/${id}/${season}/${episode}` : `https://vidsrc.xyz/embed/movie/${id}` },
   { name: '2Embed', url: (type, id, season, episode) => type === 'tv' ? `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}` : `https://www.2embed.cc/embed/${id}` },
-  { name: 'Multiembed', url: (type, id, season, episode) => type === 'tv' ? `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1&s=${season}&e=${episode}` : `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1` },
-  { name: 'Moviev Cloud', url: (type, id, season, episode) => type === 'tv' ? `https://moviev.cloud/embed/${type}/${id}/${season}/${episode}` : `https://moviev.cloud/embed/${type}/${id}` }
+  { name: 'SmashyStream', url: (type, id, season, episode) => type === 'tv' ? `https://player.smashy.stream/tv/${id}?s=${season}&e=${episode}` : `https://player.smashy.stream/movie/${id}` },
+  { name: 'AutoEmbed', url: (type, id, season, episode) => type === 'tv' ? `https://autoembed.co/tv/tmdb/${id}/${season}/${episode}` : `https://autoembed.co/movie/tmdb/${id}` },
+  { name: 'MoviesAPI', url: (type, id, season, episode) => type === 'tv' ? `https://moviesapi.club/tv/${id}/${season}/${episode}` : `https://moviesapi.club/movie/${id}` },
 ]
 
 export default function IframeRenderer({ tmdbId, mediaType = 'movie' }) {
