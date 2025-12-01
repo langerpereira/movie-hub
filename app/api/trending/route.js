@@ -14,16 +14,16 @@ export async function GET() {
     // Fetch trending movies and TV shows
     const [trendingMovies, trendingTV, popularMovies, topRated] = await Promise.all([
       fetch(`https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`, {
-        next: { revalidate: 3600 }
+        next: { revalidate: 14400 }
       }),
       fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${apiKey}`, {
-        next: { revalidate: 3600 }
+        next: { revalidate: 14400 }
       }),
       fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}`, {
-        next: { revalidate: 3600 }
+        next: { revalidate: 14400 }
       }),
       fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${apiKey}`, {
-        next: { revalidate: 3600 }
+        next: { revalidate: 14400 }
       })
     ])
 

@@ -1,9 +1,76 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import MovieLoader from '@/components/MovieLoader'
+
+// Move MovieCarousel outside and memoize it
+const MovieCarousel = memo(({ title, items, icon = '🎬' }) => {
+  const carouselRef = useRef(null)
+  const router = useRouter()
+
+  const scroll = (direction) => {
+    if (carouselRef.current) {
+      const scrollAmount = direction === 'left' ? -400 : 400
+      carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+    }
+  }
+
+  if (!items || items.length === 0) return null
+
+  return (
+    <section className="carousel-section" data-scroll data-scroll-speed="0.5">
+      <div className="carousel-header">
+        <h2 className="carousel-title-text">
+          <span className="carousel-icon">{icon}</span> 
+          <span className="carousel-title-main">{title}</span>
+        </h2>
+        <div className="carousel-nav">
+          <button className="carousel-btn" onClick={() => scroll('left')}>←</button>
+          <button className="carousel-btn" onClick={() => scroll('right')}>→</button>
+        </div>
+      </div>
+      <div className="carousel-wrapper">
+        <div className="carousel" ref={carouselRef}>
+          {items.slice(0, 20).map((item, index) => (
+            <div
+              key={item.id}
+              className="carousel-item"
+              onClick={() => router.push(`/movie/${item.id}`)}
+              style={{ animationDelay: `${index * 0.05}s` }}
+            >
+              <div className="carousel-item-inner">
+                {item.poster_path ? (
+                  <Image
+                    src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
+                    alt={item.title || item.name}
+                    width={200}
+                    height={300}
+                    className="carousel-poster"
+                  />
+                ) : (
+                  <div className="carousel-poster carousel-poster-empty" />
+                )}
+                <div className="carousel-overlay">
+                  <span className="play-icon">▶</span>
+                </div>
+              </div>
+              <div className="carousel-info">
+                <div className="carousel-item-title">{item.title || item.name}</div>
+                <div className="carousel-meta">
+                  {item.vote_average ? `⭐ ${item.vote_average.toFixed(1)}` : ''}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+})
+
+MovieCarousel.displayName = 'MovieCarousel'
 
 export default function HomePage() {
   const [categories, setCategories] = useState({
@@ -21,43 +88,26 @@ export default function HomePage() {
   const [pageLoading, setPageLoading] = useState(true)
   const [currentSlide, setCurrentSlide] = useState(0)
   const router = useRouter()
+  const slideCountRef = useRef(0)
   const scrollRef = useRef(null)
-  const locomotiveRef = useRef(null)
 
   useEffect(() => {
     fetchCategories()
-    
-    // Initialize Locomotive Scroll
-    const initLocomotive = async () => {
-      if (typeof window !== 'undefined' && window.LocomotiveScroll) {
-        locomotiveRef.current = new window.LocomotiveScroll({
-          el: scrollRef.current,
-          smooth: true,
-          multiplier: 1,
-          lerp: 0.1
-        })
-      }
-    }
-    
-    const timer = setTimeout(initLocomotive, 500)
-    
-    return () => {
-      clearTimeout(timer)
-      if (locomotiveRef.current) {
-        locomotiveRef.current.destroy()
-      }
-    }
   }, [])
 
-  // Auto-slide for hero carousel
+  // Auto-slide for hero carousel - using ref to avoid dependency issues
   useEffect(() => {
-    if (categories.trendingMovies.length > 0) {
-      const interval = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % Math.min(5, categories.trendingMovies.length))
-      }, 6000)
-      return () => clearInterval(interval)
-    }
-  }, [categories.trendingMovies])
+    slideCountRef.current = Math.min(5, categories.trendingMovies.length)
+  }, [categories.trendingMovies.length])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (slideCountRef.current > 0) {
+        setCurrentSlide((prev) => (prev + 1) % slideCountRef.current)
+      }
+    }, 6000)
+    return () => clearInterval(interval)
+  }, [])
 
   const fetchCategories = async () => {
     try {
@@ -71,70 +121,6 @@ export default function HomePage() {
     } finally {
       setPageLoading(false)
     }
-  }
-
-  const MovieCarousel = ({ title, items, icon = '🎬' }) => {
-    const [scrollPosition, setScrollPosition] = useState(0)
-    const carouselRef = useRef(null)
-
-    const scroll = (direction) => {
-      if (carouselRef.current) {
-        const scrollAmount = direction === 'left' ? -400 : 400
-        carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
-      }
-    }
-
-    if (!items || items.length === 0) return null
-
-    return (
-      <section className="carousel-section" data-scroll data-scroll-speed="0.5">
-        <div className="carousel-header">
-          <h2 className="carousel-title-text">
-            <span className="carousel-icon">{icon}</span> 
-            <span className="carousel-title-main">{title}</span>
-          </h2>
-          <div className="carousel-nav">
-            <button className="carousel-btn" onClick={() => scroll('left')}>←</button>
-            <button className="carousel-btn" onClick={() => scroll('right')}>→</button>
-          </div>
-        </div>
-        <div className="carousel-wrapper">
-          <div className="carousel" ref={carouselRef}>
-            {items.slice(0, 20).map((item, index) => (
-              <div
-                key={item.id}
-                className="carousel-item"
-                onClick={() => router.push(`/movie/${item.id}`)}
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                <div className="carousel-item-inner">
-                  {item.poster_path ? (
-                    <Image
-                      src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
-                      alt={item.title || item.name}
-                      width={200}
-                      height={300}
-                      className="carousel-poster"
-                    />
-                  ) : (
-                    <div className="carousel-poster carousel-poster-empty" />
-                  )}
-                  <div className="carousel-overlay">
-                    <span className="play-icon">▶</span>
-                  </div>
-                </div>
-                <div className="carousel-info">
-                  <div className="carousel-item-title">{item.title || item.name}</div>
-                  <div className="carousel-meta">
-                    {item.vote_average ? `⭐ ${item.vote_average.toFixed(1)}` : ''}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
   }
 
   const featuredMovie = categories.trendingMovies[currentSlide]
