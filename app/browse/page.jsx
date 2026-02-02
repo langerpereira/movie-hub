@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import MovieLoader from '@/components/MovieLoader'
@@ -21,6 +21,7 @@ export default function BrowsePage() {
   const [genres, setGenres] = useState([])
   const [selectedGenre, setSelectedGenre] = useState(null)
   const [genreMovies, setGenreMovies] = useState([])
+  const [mediaType, setMediaType] = useState('all') // 'all', 'movie', 'tv'
   const [pageLoading, setPageLoading] = useState(true)
   const router = useRouter()
 
@@ -73,7 +74,16 @@ export default function BrowsePage() {
   }
 
   const MovieCarousel = ({ title, items, icon = '🎬', showAll = false }) => {
+    const carouselRef = useRef(null)
+
     if (!items || items.length === 0) return null
+
+    const scroll = (direction) => {
+      if (carouselRef.current) {
+        const scrollAmount = direction === 'left' ? -500 : 500
+        carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+      }
+    }
 
     return (
       <section className="carousel-section">
@@ -82,13 +92,26 @@ export default function BrowsePage() {
             <span className="carousel-icon">{icon}</span>
             <span className="carousel-title-main">{title}</span>
           </h2>
+          {!showAll && (
+            <div className="carousel-nav">
+              <button className="carousel-btn" onClick={() => scroll('left')}>←</button>
+              <button className="carousel-btn" onClick={() => scroll('right')}>→</button>
+            </div>
+          )}
         </div>
-        <div className={showAll ? 'movie-grid' : 'carousel'}>
+        <div className={showAll ? 'movie-grid' : 'carousel'} ref={carouselRef}>
           {items.slice(0, showAll ? 50 : 20).map((item, index) => (
             <div
               key={item.id}
               className={showAll ? 'movie-card' : 'carousel-item'}
-              onClick={() => router.push(`/movie/${item.id}`)}
+              onClick={() => {
+                // Determine path based on item contents or title context if possible
+                // Better approach: Check item properties or rely on list type
+                // TV shows usually have 'name' and 'first_air_date', Movies 'title' and 'release_date'
+                const isTv = item.name || item.first_air_date
+                const type = isTv ? 'tv' : 'movie'
+                router.push(`/${type}/${item.id}`)
+              }}
               style={{ animationDelay: `${index * 0.05}s` }}
             >
               <div className="carousel-item-inner">
@@ -112,6 +135,7 @@ export default function BrowsePage() {
                 <div className={showAll ? 'movie-meta' : 'carousel-meta'}>
                   {item.vote_average ? `⭐ ${item.vote_average.toFixed(1)}` : ''}
                   {item.release_date && ` • ${item.release_date.split('-')[0]}`}
+                  {item.first_air_date && ` • ${item.first_air_date.split('-')[0]}`}
                 </div>
               </div>
             </div>
@@ -141,6 +165,52 @@ export default function BrowsePage() {
           <p className="browse-subtitle">
             Discover thousands of movies and TV shows
           </p>
+        </div>
+
+        {/* Media Type Filter */}
+        <div className="filter-bar" style={{ display: 'flex', gap: '15px', marginBottom: '30px' }}>
+          <button
+            className={`filter-btn ${mediaType === 'all' ? 'active' : ''}`}
+            onClick={() => setMediaType('all')}
+            style={{
+              padding: '8px 20px',
+              borderRadius: '20px',
+              background: mediaType === 'all' ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
+              color: 'white',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            All
+          </button>
+          <button
+            className={`filter-btn ${mediaType === 'movie' ? 'active' : ''}`}
+            onClick={() => setMediaType('movie')}
+            style={{
+              padding: '8px 20px',
+              borderRadius: '20px',
+              background: mediaType === 'movie' ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
+              color: 'white',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            Movies
+          </button>
+          <button
+            className={`filter-btn ${mediaType === 'tv' ? 'active' : ''}`}
+            onClick={() => setMediaType('tv')}
+            style={{
+              padding: '8px 20px',
+              borderRadius: '20px',
+              background: mediaType === 'tv' ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
+              color: 'white',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            TV Series
+          </button>
         </div>
 
         {/* Genre Filter */}
@@ -173,7 +243,7 @@ export default function BrowsePage() {
         {/* Genre-filtered Movies */}
         {selectedGenre && genreMovies.length > 0 && (
           <MovieCarousel
-            title={`${selectedGenre.name} Movies`}
+            title={`${selectedGenre.name} ${mediaType === 'tv' ? 'Series' : 'Movies'}`}
             items={genreMovies}
             showAll={true}
           />
@@ -182,16 +252,25 @@ export default function BrowsePage() {
         {/* All Categories */}
         {!selectedGenre && (
           <>
-            <MovieCarousel title="Trending Movies" items={categories.trendingMovies} icon="🔥" />
-            <MovieCarousel title="Trending TV Shows" items={categories.trendingTV} icon="📺" />
-            <MovieCarousel title="Popular Movies" items={categories.popularMovies} icon="⭐" />
-            <MovieCarousel title="Top Rated" items={categories.topRated} icon="🏆" />
-            <MovieCarousel title="Action & Adventure" items={categories.actionMovies} icon="💥" />
-            <MovieCarousel title="Comedy" items={categories.comedyMovies} icon="😂" />
-            <MovieCarousel title="Horror" items={categories.horrorMovies} icon="👻" />
-            <MovieCarousel title="Kids & Family" items={categories.kidsMovies} icon="👶" />
-            <MovieCarousel title="Animation" items={categories.animationMovies} icon="🎨" />
-            <MovieCarousel title="Documentaries" items={categories.documentaries} icon="📚" />
+            {(mediaType === 'all' || mediaType === 'movie') && (
+              <>
+                <MovieCarousel title="Trending Movies" items={categories.trendingMovies} icon="🔥" />
+                <MovieCarousel title="Popular Movies" items={categories.popularMovies} icon="⭐" />
+                <MovieCarousel title="Top Rated Movies" items={categories.topRated} icon="🏆" />
+                <MovieCarousel title="Action & Adventure" items={categories.actionMovies} icon="💥" />
+                <MovieCarousel title="Comedy" items={categories.comedyMovies} icon="😂" />
+                <MovieCarousel title="Horror" items={categories.horrorMovies} icon="👻" />
+                <MovieCarousel title="Kids & Family" items={categories.kidsMovies} icon="👶" />
+                <MovieCarousel title="Animation" items={categories.animationMovies} icon="🎨" />
+              </>
+            )}
+
+            {(mediaType === 'all' || mediaType === 'tv') && (
+              <>
+                <MovieCarousel title="Trending TV Shows" items={categories.trendingTV} icon="📺" />
+                <MovieCarousel title="Documentaries" items={categories.documentaries} icon="📚" />
+              </>
+            )}
           </>
         )}
       </div>
