@@ -2607,3 +2607,178 @@ input, textarea {
   background: #000;
   color: white;
 }
+
+/* ==================== MOBILE RESPONSIVENESS ==================== */
+@media (max-width: 768px) {
+  .header-content { flex-wrap: wrap; gap: 10px; }
+  .logo-text { font-size: 18px; }
+  .nav { order: 3; width: 100%; justify-content: space-around; margin-top: 10px; flex-wrap: wrap; }
+  .nav-link { font-size: 12px; padding: 8px 12px; }
+  .nav-user-menu { flex-direction: column; gap: 5px; margin-left: 0; }
+  .container { padding: 0 15px; }
+  .hero { min-height: 60vh; padding: 80px 0 40px; }
+  .hero-content h1 { font-size: 32px; }
+  .hero-content p { font-size: 14px; }
+  .movie-card { min-width: 140px; max-width: 140px; }
+  .movie-poster { height: 210px; }
+  .movie-title { font-size: 13px; }
+  .movie-header { flex-direction: column; gap: 20px; }
+  .movie-poster-detail { width: 150px !important; height: 225px !important; }
+  .filter-bar { flex-wrap: wrap; gap: 10px !important; }
+  .filter-btn { font-size: 12px; padding: 6px 16px !important; }
+  .genre-chips { gap: 8px; }
+  .genre-chip { font-size: 12px; padding: 6px 12px; }
+  .carousel-container { margin: 0 -15px; }
+  .carousel-scroll { padding: 0 15px; gap: 10px; }
+  .carousel-arrow { width: 35px; height: 35px; font-size: 16px; }
+  .search-container { width: 100%; max-width: 100%; }
+  .search-input { font-size: 14px; }
+  .search-results { max-height: 300px; }
+  .footer-content { flex-direction: column; gap: 30px; text-align: center; }
+  .footer-links { justify-content: center; }
+  .action-btn { font-size: 13px; padding: 8px 16px; }
+  .review-card { padding: 15px; }
+  .review-content { font-size: 13px; }
+  .join-card { padding: 30px 20px; width: 90%; }
+}
+
+@media (max-width: 480px) {
+  .hero-content h1 { font-size: 24px; }
+  .movie-card { min-width: 120px; max-width: 120px; }
+  .movie-poster { height: 180px; }
+  .nav-link { font-size: 11px; padding: 6px 8px; }
+  .logo-text { font-size: 16px; }
+}
+
+/* Fix for carousel and grid items */
+.carousel-scroll {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 20px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.carousel-scroll.show-all {
+  display: grid !important;
+  overflow-x: visible !important;
+}
+
+.movie-card {
+  min-width: 160px;
+  max-width: 160px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.movie-card:hover {
+  transform: scale(1.05);
+}
+
+.movie-poster {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.movie-poster-placeholder {
+  width: 100%;
+  height: 240px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+}
+
+.movie-info {
+  margin-top: 8px;
+}
+
+.movie-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.movie-meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.load-more-btn:hover {
+  background: var(--primary-dark) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+}
+
+/* Mobile specific fixes */
+@media (max-width: 768px) {
+  .carousel-scroll.show-all {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 15px !important;
+  }
+  
+  .movie-card {
+    min-width: 140px;
+    max-width: 140px;
+  }
+  
+  .movie-poster,
+  .movie-poster-placeholder {
+    height: 210px;
+  }
+  
+  .carousel-scroll:not(.show-all) {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-scroll.show-all {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
+    gap: 12px !important;
+  }
+  
+  .movie-card {
+    min-width: 120px;
+    max-width: 120px;
+  }
+  
+  .movie-poster,
+  .movie-poster-placeholder {
+    height: 180px;
+  }
+}
+
+/* Fix header overlap on all pages */
+.main-content {
+  padding-top: 70px;
+  min-height: 100vh;
+}
+
+/* Browse page specific */
+.browse-hero {
+  padding-top: 40px !important;
+}
+
+/* Movie/TV detail pages */
+.movie-page {
+  padding-top: 20px;
+}
+
+/* Join screen should be full height without padding */
+.join-screen {
+  margin-top: -70px;
+  height: 100vh !important;
+}

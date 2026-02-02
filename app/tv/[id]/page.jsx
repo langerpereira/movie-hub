@@ -1,6 +1,7 @@
 /* FILE: app/tv/[id]/page.jsx */
 import { getTvDetails, getPosterUrl } from '@/lib/tmdb'
 import IframeRenderer from '@/components/IframeRenderer'
+import WatchPartyButton from '@/components/WatchPartyButton'
 import Image from 'next/image'
 
 async function getTvReviews(id) {
@@ -94,6 +95,13 @@ export default async function TvPage({ params }) {
                                     {tvData.number_of_episodes && (
                                         <span>🎬 {tvData.number_of_episodes} Episodes</span>
                                     )}
+                                </div>
+
+                                <div style={{ margin: '20px 0', display: 'flex', gap: '15px' }}>
+                                    <WatchPartyButton tmdbId={id} mediaType="tv" />
+                                    <button className="action-btn">
+                                        + Add to List
+                                    </button>
                                 </div>
 
                                 {tvData.genres && tvData.genres.length > 0 && (

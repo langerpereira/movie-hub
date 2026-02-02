@@ -1,6 +1,7 @@
 /* FILE: app/movie/[id]/page.jsx */
 import { getMovieDetails, getPosterUrl } from '@/lib/tmdb'
 import IframeRenderer from '@/components/IframeRenderer'
+import WatchPartyButton from '@/components/WatchPartyButton'
 import Image from 'next/image'
 
 async function getMovieReviews(id) {
@@ -98,6 +99,13 @@ export default async function MoviePage({ params }) {
                   )}
                 </div>
 
+                <div style={{ margin: '20px 0', display: 'flex', gap: '15px' }}>
+                  <WatchPartyButton tmdbId={id} mediaType="movie" />
+                  <button className="action-btn">
+                    + Add to List
+                  </button>
+                </div>
+
                 {movieData.genres && movieData.genres.length > 0 && (
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     {movieData.genres.map((genre) => (
@@ -158,9 +166,9 @@ export default async function MoviePage({ params }) {
                               : `https://image.tmdb.org/t/p/w45${review.author_details.avatar_path}`
                           }
                           alt={review.author}
-                          className="review-avatar"
                         />
                       )}
+                      {/* The buttons are removed from here */}
                       <div>
                         <div className="review-author-name">{review.author}</div>
                         {review.author_details?.rating && (
