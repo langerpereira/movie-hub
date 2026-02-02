@@ -46,7 +46,7 @@ export default function HeaderSearch() {
     const value = e.target.value
     setQuery(value)
     setIsOpen(true)
-    
+
     // Debounce search
     const timeoutId = setTimeout(() => {
       searchMovies(value)
@@ -55,8 +55,12 @@ export default function HeaderSearch() {
     return () => clearTimeout(timeoutId)
   }
 
-  const handleResultClick = (id) => {
-    router.push(`/movie/${id}`)
+  const handleResultClick = (item) => {
+    if (item.media_type === 'tv') {
+      router.push(`/tv/${item.id}`)
+    } else {
+      router.push(`/movie/${item.id}`)
+    }
     setQuery('')
     setResults([])
     setIsOpen(false)
@@ -86,7 +90,7 @@ export default function HeaderSearch() {
               <div
                 key={item.id}
                 className="header-search-item"
-                onClick={() => handleResultClick(item.id)}
+                onClick={() => handleResultClick(item)}
               >
                 {item.poster_path ? (
                   <img

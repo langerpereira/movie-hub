@@ -14,7 +14,7 @@ const SERVERS = [
   { name: 'Embed.su', url: (type, id, season, episode) => type === 'tv' ? `https://embed.su/embed/tv/${id}/${season}/${episode}` : `https://embed.su/embed/movie/${id}` },
   { name: 'VidLink', url: (type, id, season, episode) => type === 'tv' ? `https://vidlink.pro/tv/${id}/${season}/${episode}` : `https://vidlink.pro/movie/${id}` },
   { name: 'SuperEmbed', url: (type, id, season, episode) => type === 'tv' ? `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}` : `https://multiembed.mov/?video_id=${id}&tmdb=1` },
-  
+
   // Backup Servers
   { name: 'VidSrc.xyz', url: (type, id, season, episode) => type === 'tv' ? `https://vidsrc.xyz/embed/tv/${id}/${season}/${episode}` : `https://vidsrc.xyz/embed/movie/${id}` },
   { name: '2Embed', url: (type, id, season, episode) => type === 'tv' ? `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}` : `https://www.2embed.cc/embed/${id}` },
@@ -23,7 +23,7 @@ const SERVERS = [
   { name: 'MoviesAPI', url: (type, id, season, episode) => type === 'tv' ? `https://moviesapi.club/tv/${id}/${season}/${episode}` : `https://moviesapi.club/movie/${id}` },
 ]
 
-export default function IframeRenderer({ tmdbId, mediaType = 'movie' }) {
+export default function IframeRenderer({ tmdbId, mediaType = 'movie', seasonsData = [] }) {
   const [customIframe, setCustomIframe] = useState(null)
   const [loading, setLoading] = useState(true)
   const [currentServer, setCurrentServer] = useState(0)
@@ -37,7 +37,7 @@ export default function IframeRenderer({ tmdbId, mediaType = 'movie' }) {
       if (stored) {
         const entries = JSON.parse(stored)
         const html = entries[tmdbId]
-        
+
         if (html) {
           setCustomIframe(html)
         }
@@ -95,40 +95,95 @@ export default function IframeRenderer({ tmdbId, mediaType = 'movie' }) {
       </div>
 
       {/* Season & Episode Selector for TV Shows */}
+      {/* Season & Episode Selector for TV Shows */}
       {isTvShow && (
         <div className="episode-selector">
           <div className="episode-controls">
-            <div className="control-group">
-              <label htmlFor="season-select">Season:</label>
-              <input
-                id="season-select"
-                type="number"
-                min="1"
-                max="30"
-                value={season}
-                onChange={(e) => setSeason(Math.max(1, parseInt(e.target.value) || 1))}
-                className="episode-input"
-              />
-            </div>
-            <div className="control-group">
-              <label htmlFor="episode-select">Episode:</label>
-              <input
-                id="episode-select"
-                type="number"
-                min="1"
-                max="50"
-                value={episode}
-                onChange={(e) => setEpisode(Math.max(1, parseInt(e.target.value) || 1))}
-                className="episode-input"
-              />
-            </div>
-            <button 
+            {seasonsData.length > 0 ? (
+              <>
+                <div className="control-group">
+                  <label htmlFor="season-select">Season:</label>
+                  <select
+                    id="season-select"
+                    value={season}
+                    onChange={(e) => {
+                      const newSeason = parseInt(e.target.value)
+                      setSeason(newSeason)
+                      setEpisode(1) // Reset to episode 1 on season change
+                    }}
+                    className="episode-select"
+                  >
+                    {seasonsData
+                      .filter(s => s.season_number > 0) // Filter out Specials (Season 0) for cleaner UX, or keep if requested. Let's stick to standard seasons.
+                      .sort((a, b) => a.season_number - b.season_number)
+                      .map((s) => (
+                        <option key={s.id} value={s.season_number}>
+                          Season {s.season_number} ({s.episode_count} Eps)
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div className="control-group">
+                  <label htmlFor="episode-select">Episode:</label>
+                  <select
+                    id="episode-select"
+                    value={episode}
+                    onChange={(e) => setEpisode(parseInt(e.target.value))}
+                    className="episode-select"
+                  >
+                    {Array.from(
+                      { length: seasonsData.find(s => s.season_number === season)?.episode_count || 1 },
+                      (_, i) => i + 1
+                    ).map((ep) => (
+                      <option key={ep} value={ep}>
+                        Episode {ep}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            ) : (
+              // Fallback for when metadata is missing
+              <>
+                <div className="control-group">
+                  <label htmlFor="season-select">Season:</label>
+                  <input
+                    id="season-select"
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={season}
+                    onChange={(e) => setSeason(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="episode-input"
+                  />
+                </div>
+                <div className="control-group">
+                  <label htmlFor="episode-select">Episode:</label>
+                  <input
+                    id="episode-select"
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={episode}
+                    onChange={(e) => setEpisode(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="episode-input"
+                  />
+                </div>
+              </>
+            )}
+
+            <button
               className="load-btn"
               onClick={() => {
-                // Force reload by updating the key
                 const currentServerData = SERVERS[currentServer]
-                const newUrl = currentServerData.url(mediaType, tmdbId, season, episode)
+                // const newUrl = currentServerData.url(mediaType, tmdbId, season, episode) // unused
                 window.location.hash = `s${season}e${episode}`
+
+                // Force iframe refresh hack
+                const iframe = document.querySelector('iframe')
+                if (iframe) {
+                  iframe.src = iframe.src // reload
+                }
               }}
             >
               Load Episode

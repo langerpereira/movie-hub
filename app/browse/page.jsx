@@ -79,7 +79,7 @@ export default function BrowsePage() {
       <section className="carousel-section">
         <div className="carousel-header">
           <h2 className="carousel-title-text">
-            <span className="carousel-icon">{icon}</span> 
+            <span className="carousel-icon">{icon}</span>
             <span className="carousel-title-main">{title}</span>
           </h2>
         </div>
@@ -172,9 +172,9 @@ export default function BrowsePage() {
 
         {/* Genre-filtered Movies */}
         {selectedGenre && genreMovies.length > 0 && (
-          <MovieCarousel 
-            title={`${selectedGenre.name} Movies`} 
-            items={genreMovies} 
+          <MovieCarousel
+            title={`${selectedGenre.name} Movies`}
+            items={genreMovies}
             showAll={true}
           />
         )}

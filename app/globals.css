@@ -2573,3 +2573,37 @@ input, textarea {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Loading Container */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--bg-dark);
+}
+
+/* Episode Select */
+.episode-select {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  min-width: 120px;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.episode-select:focus {
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.episode-select option {
+  background: #000;
+  color: white;
+}

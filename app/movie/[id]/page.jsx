@@ -1,5 +1,5 @@
 /* FILE: app/movie/[id]/page.jsx */
-import { getMovieDetails, getTvDetails, getPosterUrl } from '@/lib/tmdb'
+import { getMovieDetails, getPosterUrl } from '@/lib/tmdb'
 import IframeRenderer from '@/components/IframeRenderer'
 import Image from 'next/image'
 
@@ -24,12 +24,7 @@ export default async function MoviePage({ params }) {
   const { id } = params
 
   // Try to fetch movie details from TMDB
-  let movieData = await getMovieDetails(id)
-  
-  // If not a movie, try TV show
-  if (!movieData) {
-    movieData = await getTvDetails(id)
-  }
+  const movieData = await getMovieDetails(id)
 
   // Fetch reviews
   const reviews = await getMovieReviews(id)
@@ -197,11 +192,7 @@ export default async function MoviePage({ params }) {
 // Generate metadata for better SEO
 export async function generateMetadata({ params }) {
   const { id } = params
-  let movieData = await getMovieDetails(id)
-  
-  if (!movieData) {
-    movieData = await getTvDetails(id)
-  }
+  const movieData = await getMovieDetails(id)
 
   const title = movieData ? (movieData.title || movieData.name) : `TMDB ID: ${id}`
   const description = movieData?.overview || 'Stream movies and series online'

@@ -6,7 +6,7 @@ import Image from 'next/image'
 import MovieLoader from '@/components/MovieLoader'
 
 // Move MovieCarousel outside and memoize it
-const MovieCarousel = memo(({ title, items, icon = '🎬' }) => {
+const MovieCarousel = memo(({ title, items, icon = '🎬', mediaType = 'movie' }) => {
   const carouselRef = useRef(null)
   const router = useRouter()
 
@@ -23,7 +23,7 @@ const MovieCarousel = memo(({ title, items, icon = '🎬' }) => {
     <section className="carousel-section" data-scroll data-scroll-speed="0.5">
       <div className="carousel-header">
         <h2 className="carousel-title-text">
-          <span className="carousel-icon">{icon}</span> 
+          <span className="carousel-icon">{icon}</span>
           <span className="carousel-title-main">{title}</span>
         </h2>
         <div className="carousel-nav">
@@ -37,7 +37,7 @@ const MovieCarousel = memo(({ title, items, icon = '🎬' }) => {
             <div
               key={item.id}
               className="carousel-item"
-              onClick={() => router.push(`/movie/${item.id}`)}
+              onClick={() => router.push(`/${mediaType}/${item.id}`)}
               style={{ animationDelay: `${index * 0.05}s` }}
             >
               <div className="carousel-item-inner">
@@ -144,7 +144,7 @@ export default function HomePage() {
               key={movie.id}
               className={`hero-slide ${index === currentSlide ? 'active' : ''}`}
               style={{
-                backgroundImage: movie.backdrop_path 
+                backgroundImage: movie.backdrop_path
                   ? `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`
                   : 'none'
               }}
@@ -152,7 +152,7 @@ export default function HomePage() {
           ))}
         </div>
         <div className="hero-gradient"></div>
-        
+
         <div className="container hero-content">
           <div className="hero-text" data-scroll data-scroll-speed="1">
             <span className="hero-badge">🔥 Trending Now</span>
@@ -166,7 +166,7 @@ export default function HomePage() {
             <div className="hero-actions">
               {featuredMovie && (
                 <>
-                  <button 
+                  <button
                     className="btn-hero-primary"
                     onClick={() => router.push(`/movie/${featuredMovie.id}`)}
                   >
@@ -178,7 +178,7 @@ export default function HomePage() {
                 </>
               )}
             </div>
-            
+
             {/* Hero Dots */}
             <div className="hero-dots">
               {categories.trendingMovies.slice(0, 5).map((_, index) => (
@@ -196,8 +196,8 @@ export default function HomePage() {
       {/* Hot Content Section - Only Trending & Popular */}
       <div className="content-section">
         <div className="container">
-          <MovieCarousel title="Trending Movies" items={categories.trendingMovies} icon="🔥" />
-          <MovieCarousel title="Hot TV Series" items={categories.trendingTV} icon="📺" />
+          <MovieCarousel title="Trending Movies" items={categories.trendingMovies} icon="🔥" mediaType="movie" />
+          <MovieCarousel title="Hot TV Series" items={categories.trendingTV} icon="📺" mediaType="tv" />
           <MovieCarousel title="Popular Right Now" items={categories.popularMovies} icon="⭐" />
         </div>
       </div>
@@ -226,7 +226,7 @@ export default function HomePage() {
               <span className="separator">✦</span>
             </div>
           </div>
-          
+
           {/* Second diagonal band */}
           <div className="diagonal-band band-2">
             <div className="band-track reverse">
